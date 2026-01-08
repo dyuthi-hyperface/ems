@@ -2,6 +2,7 @@ package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.entity.Department;
 import com.example.employeemanagement.service.DepartmentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
-    // Constructor Injection (BEST PRACTICE)
+    // Constructor Injection (Best Practice)
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
@@ -22,7 +23,7 @@ public class DepartmentController {
     // CREATE
     @PostMapping
     public ResponseEntity<Department> createDepartment(
-            @RequestBody Department department) {
+            @Valid @RequestBody Department department) {
 
         Department savedDepartment = departmentService.createDepartment(department);
         return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
@@ -44,7 +45,7 @@ public class DepartmentController {
     @PutMapping("/{id}")
     public ResponseEntity<Department> updateDepartment(
             @PathVariable Long id,
-            @RequestBody Department department) {
+            @Valid @RequestBody Department department) {
 
         return ResponseEntity.ok(
                 departmentService.updateDepartment(id, department)

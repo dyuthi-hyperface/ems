@@ -2,6 +2,7 @@ package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.entity.Project;
 import com.example.employeemanagement.service.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,34 +19,39 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    // CREATE
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        return new ResponseEntity<>(
-                projectService.createProject(project),
-                HttpStatus.CREATED
-        );
+    public ResponseEntity<Project> createProject(
+            @Valid @RequestBody Project project) {
+
+        Project savedProject = projectService.createProject(project);
+        return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
+    // READ ALL
     @GetMapping
     public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
 
+    // READ BY ID
     @GetMapping("/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
+    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Project> updateProject(
             @PathVariable Long id,
-            @RequestBody Project project) {
+            @Valid @RequestBody Project project) {
 
         return ResponseEntity.ok(
                 projectService.updateProject(id, project)
         );
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
