@@ -32,4 +32,3 @@ public class Project {
         this.department = department;
     }
 }
-
