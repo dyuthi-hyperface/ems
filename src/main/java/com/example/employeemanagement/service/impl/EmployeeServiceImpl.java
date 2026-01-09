@@ -1,9 +1,8 @@
-package com.example.employeemanagement.service.impl;
+package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.entity.Employee;
-import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.repository.EmployeeRepository;
-import com.example.employeemanagement.service.EmployeeService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,13 +11,18 @@ import java.util.List;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
+                               PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public Employee createEmployee(Employee employee) {
+        // 🔐 HASH PASSWORD BEFORE SAVING
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         return employeeRepository.save(employee);
     }
 
@@ -30,22 +34,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeeById(Long id) {
         return employeeRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Employee not found with id: " + id)
-                );
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
     @Override
     public Employee updateEmployee(Long id, Employee employee) {
-        Employee existingEmployee = getEmployeeById(id);
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setDepartment(employee.getDepartment());
-        existingEmployee.setProject(employee.getProject());
-        return employeeRepository.save(existingEmployee);
+        Employee existing = getEmployeeById(id);
+        existing.setUsername(employee.getUsername());
+
+        if (employee.getPassword() != null) {
+            existing.setPassword(passwordEncoder.encode(employee.getPassword()));
+        }
+
+        existing.setDepartment(employee.getDepartment());
+        existing.setProject(employee.getProject());
+
+        return employeeRepository.save(existing);
     }
 
     @Override
     public void deleteEmployee(Long id) {
-        employeeRepository.delete(getEmployeeById(id));
+        employeeRepository.deleteById(id);
     }
 }
