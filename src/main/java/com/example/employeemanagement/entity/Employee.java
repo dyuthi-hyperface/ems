@@ -2,10 +2,14 @@ package com.example.employeemanagement.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "employees")
+@Table(
+        name = "employees",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username")
+        }
+)
 public class Employee {
 
     @Id
@@ -16,45 +20,68 @@ public class Employee {
     @Column(nullable = false)
     private String name;
 
+    @NotBlank(message = "Username must not be blank")
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @NotBlank(message = "Password must not be blank")
+    @Column(nullable = false)
+    private String password;
+
+    // ---- Relationships ----
+
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
-    @NotNull(message = "Department must be provided")
     private Department department;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
-    @NotNull(message = "Project must be provided")
     private Project project;
 
-    public Employee() {
-    }
+    // ---- Getters & Setters ----
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
     public Project getProject() {
         return project;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public void setProject(Project project) {
